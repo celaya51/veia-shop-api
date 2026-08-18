@@ -1,0 +1,22 @@
+[Unit]
+Description=VEIA Shop Mercado Pago API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=debian
+Group=debian
+WorkingDirectory=/home/debian/.openclaw/workspace/veia-shop-api
+EnvironmentFile=/etc/veia-shop-api.env
+ExecStart=/usr/bin/node /home/debian/.openclaw/workspace/veia-shop-api/server.mjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/debian/.openclaw/workspace/veia-shop-api
+
+[Install]
+WantedBy=multi-user.target

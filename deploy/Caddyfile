@@ -1,0 +1,67 @@
+{
+    admin off
+}
+
+http://127.0.0.1:8080 {
+    bind 127.0.0.1
+    respond /healthz "ok" 200
+    respond 404
+}
+
+chat.169.58.34.45.sslip.io {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8065
+}
+
+mail.veia.com.mx, autodiscover.veia.com.mx, autoconfig.veia.com.mx {
+    encode zstd gzip
+    reverse_proxy https://127.0.0.1:8443 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+        header_up Host {http.request.host}
+    }
+}
+
+veia.com.mx, www.veia.com.mx {
+    encode zstd gzip
+    root * /var/www/veia
+
+    @php path *.php
+    reverse_proxy @php unix//run/php/php8.4-fpm.sock {
+        transport fastcgi {
+            env SCRIPT_FILENAME /var/www/veia{path}
+            env DOCUMENT_ROOT /var/www/veia
+        }
+    }
+
+    file_server
+}
+
+dev.veia.com.mx, dev.169.58.34.45.sslip.io {
+    encode zstd gzip
+    root * /var/www/dev-veia
+    file_server
+}
+
+shop-api.169.58.34.45.sslip.io {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8095
+}
+
+agenda.veia.com.mx {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:3000
+}
+
+# --- Infraestructura (2026-08-15) ---
+
+coolify.veia.com.mx, coolify.169.58.34.45.sslip.io {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8000
+}
+
+n8n.veia.com.mx, n8n.169.58.34.45.sslip.io {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8082
+}
